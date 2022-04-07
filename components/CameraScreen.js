@@ -1,91 +1,106 @@
-import React, {useState, useRef, useMemo, useCallback} from 'react';
-import {Button, TouchableOpacity} from 'react-native-paper';
-import {SafeAreaView, View, StyleSheet, ImageBackground} from 'react-native';
-import {Linking} from 'react-native';
-import {
-  Camera,
-  useCameraDevices,
-  CameraCaptureError,
-} from 'react-native-vision-camera';
+import React, {useRef, useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import axios from 'react-native-axios';
+import {RNCamera} from 'react-native-camera';
 
 const CameraScreen = ({navigation}) => {
   const camera = useRef(null);
-  // const source = useMemo(() => ({uri: `file://${path}`}), []);
-  const [photoSource, setPhotoSource] = useState(null);
+  const [imagePath, setImagePath] = useState(null);
+  const [base64img, setBase64img] = useState(null);
+  const [res, setRes] = useState(null);
 
-  // const [{cameraRef}, {takePhoto}] = useCameraDevices(null);
-
-  const devices = useCameraDevices('triple-camera');
-  const device = devices.back;
-
-  const takePhotoOptions = useMemo(
-    () => ({
-      photoCodec: 'jpeg',
-      quality: 90,
-      skipMetadata: false,
-    }),
-    [],
-  );
-  const capture = useCallback(async () => {
+  const takePicture = async () => {
     try {
-      if (camera.current == null) throw new Error('Camera ref is null!');
-      console.log('Taking photo...');
-      const photo = await camera.current.takePhoto(takePhotoOptions);
-      const path = photo.path;
-      setPhotoSource(`file://${path}`);
-      console.log('photo Path...: ', path);
-    } catch (e) {
-      if (e instanceof CameraCaptureError) {
-        switch (e.code) {
-          case 'capture/file-io-error':
-            console.error('Failed to write photo to disk!');
-            break;
-          default:
-            console.error('Failed to take photo!', e);
-            break;
-        }
-      }
+      const options = {
+        quality: 0.5,
+        base64: true,
+        exif: true,
+        captureAudio: false,
+      };
+      const data = await camera.current.takePictureAsync(options);
+      // const path = data.uri;
+      // const path64 = data.base64;
+      setImagePath(data.uri);
+      setBase64img(data.base64);
+      console.log('Image file: ', imagePath);
+      // console.log('base64: ', base64img);
+      // console.log('Image metadata: ', data.exif);
+    } catch (error) {
+      console.error('Failed to take photo!', error);
     }
-  }, [takePhotoOptions]);
+  };
 
-  console.log('Photo source: ', photoSource);
-
-  if (photoSource) {
-    return <ImageBackground source={photoSource} />;
-  }
+  const postImage = () => {
+    const postData = {img: base64img};
+    axios
+      .post('http://192.168.0.252:3000/test/', postData)
+      .then(function (response) {
+        // console.log('Result response is: ', response.data);
+        setRes(response.data);
+      })
+      .catch(function (error) {
+        console.log('Api Error: ', error);
+      });
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {device != null && (
-        <Camera
-          ref={camera}
-          photo={true}
-          style={StyleSheet.absoluteFill}
-          device={device}
-          isActive={true}
-        />
-      )}
-      <Button
-        mode="contained"
-        onPress={() => {
-          capture();
-          // navigation.navigate('HomeScreen');
-        }}>
-        Snap
-      </Button>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <RNCamera
+        ref={camera}
+        style={styles.preview}
+        type={RNCamera.Constants.Type.back}
+        flashMode={RNCamera.Constants.FlashMode.on}
+        androidCameraPermissionOptions={{
+          title: 'Permission to use camera',
+          message: 'We need your permission to use your camera',
+          buttonPositive: 'Ok',
+          buttonNegative: 'Cancel',
+        }}
+        androidRecordAudioPermissionOptions={{
+          title: 'Permission to use audio recording',
+          message: 'We need your permission to use your audio',
+          buttonPositive: 'Ok',
+          buttonNegative: 'Cancel',
+        }}
+      />
+      <View style={styles.cameraview}>
+        <TouchableOpacity
+          onPress={() => {
+            takePicture();
+            postImage();
+            navigation.navigate('DetectionResultScreen', {imagePath});
+          }}
+          style={styles.capture}>
+          <Text style={{fontSize: 14}}> SNAP </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: 'column',
+    backgroundColor: 'black',
   },
   preview: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  cameraview: {
+    flex: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  capture: {
+    flex: 0,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    padding: 15,
+    paddingHorizontal: 20,
+    alignSelf: 'center',
+    margin: 20,
   },
 });
 
