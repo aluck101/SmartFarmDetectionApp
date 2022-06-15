@@ -1,13 +1,19 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet, Image, Text} from 'react-native';
+import {Paragraph, Text} from 'react-native-paper';
+import {SafeAreaView, StyleSheet, Image, View} from 'react-native';
 
 const DetectionResultScreen = ({route}) => {
-  const {imagePath} = route.params;
-  //   console.log('base 64 ', base64);
+  const {imagePath, res} = route.params;
   return (
     <SafeAreaView style={styles.container}>
+      <Text style={styles.textTitle}> Detection Result</Text>
+      <Paragraph />
       <Image source={{uri: imagePath}} style={styles.image_style} />
-      <Text> Result: {imagePath} </Text>
+      <Paragraph />
+      <View>
+        <Text> Result: {res.category} </Text>
+        <Text> Confidence: {res.probs} </Text>
+      </View>
     </SafeAreaView>
   );
 };
@@ -26,6 +32,13 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-end',
+  },
+  textTitle: {
+    fontWeight: 'bold',
+    fontSize: 30,
+  },
+  textBody: {
+    fontSize: 50,
   },
 });
 export default DetectionResultScreen;

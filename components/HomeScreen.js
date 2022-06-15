@@ -1,30 +1,26 @@
-import React, {useState, useEffect, useRef, useMemo, useCallback} from 'react';
-import {SafeAreaView, StyleSheet} from 'react-native';
-import {Linking} from 'react-native';
-import {Button, Title} from 'react-native-paper';
+import React from 'react';
+import {SafeAreaView, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {Button, Appbar, Card, Title, Paragraph} from 'react-native-paper';
 
 function HomeScreen({navigation}) {
-  // const [hasPermission, sethasPermission] = useState('not-determined');
-  // useCallback(async () => {
-  //   console.log('Requesting camera permission...');
-  //   const permission = await Camera.requestCameraPermission();
-  //   console.log(`Camera permission status: ${permission}`);
-
-  //   if (hasPermission === 'denied') await Linking.openSettings();
-  //   sethasPermission(permission);
-  // }, []);
-  // useEffect(() => {
-  //   if (hasPermission === 'authorized');
-  // }, [hasPermission]);
-
   return (
     <SafeAreaView style={styles.container}>
-      <Title> Test Environment for Camera Based Object Detection </Title>
-      <Button
-        mode="contained"
-        onPress={() => navigation.navigate('CameraScreen')}>
-        Detect Object
-      </Button>
+      <Title style={styles.header}>Camera Based Detection</Title>
+
+      <Image
+        source={require('../assets/img/pl.jpg')}
+        style={{width: 400, height: 400}}
+      />
+
+      <Paragraph>Test Environment for Camera Based Object Detection</Paragraph>
+      <TouchableOpacity>
+        <Button
+          icon="camera"
+          mode="outlined"
+          onPress={() => navigation.navigate('CameraScreen')}>
+          Detect Object
+        </Button>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -34,6 +30,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'mintcream',
   },
 });
 
