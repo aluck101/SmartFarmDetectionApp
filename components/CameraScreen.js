@@ -32,11 +32,12 @@ const CameraScreen = ({navigation}) => {
       console.error('Failed to take photo!', error);
     }
   };
+
   const postImg = async () => {
     try {
       const postData = {img: base64img};
       const response = await axios.post(
-        'http://192.168.0.252:3000/test/',
+        'http://127.0.0.1:3000/test/',
         postData,
       );
       setRes(response.data);
@@ -63,15 +64,10 @@ const CameraScreen = ({navigation}) => {
           message: 'We need your permission to use your camera',
           buttonPositive: 'Ok',
           buttonNegative: 'Cancel',
-        }}
-        androidRecordAudioPermissionOptions={{
-          title: 'Permission to use audio recording',
-          message: 'We need your permission to use your audio',
-          buttonPositive: 'Ok',
-          buttonNegative: 'Cancel',
         }}>
-        {({camera, status, recordAudioPermissionStatus}) => {
-          if (status !== 'READY') return <CameraLoadingView />;
+        {({camera, status}) => {
+          if (status !== 'READY' || camera == null)
+            return <CameraLoadingView />;
           return (
             <View style={styles.cameraview}>
               <TouchableOpacity

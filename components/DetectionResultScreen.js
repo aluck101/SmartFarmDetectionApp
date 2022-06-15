@@ -11,8 +11,8 @@ const DetectionResultScreen = ({route}) => {
       <Image source={{uri: imagePath}} style={styles.image_style} />
       <Paragraph />
       <View>
-        <Text> Result: {res.category} </Text>
-        <Text> Confidence: {res.probs} </Text>
+        <Text style={styles.textBody}> Result: {res.category} </Text>
+        <Text style={styles.textBody}> Confidence: {res.probs} </Text>
       </View>
     </SafeAreaView>
   );
@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'mintcream',
   },
   image_style: {
     width: 300,
@@ -38,7 +39,9 @@ const styles = StyleSheet.create({
     fontSize: 30,
   },
   textBody: {
-    fontSize: 50,
+    fontWeight: 'bold',
+    color: 'green',
+    fontSize: 20,
   },
 });
 export default DetectionResultScreen;
