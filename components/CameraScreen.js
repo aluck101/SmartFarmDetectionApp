@@ -37,14 +37,10 @@ const CameraScreen = ({navigation}) => {
     try {
       const postData = {img: base64img};
       const response = await axios.post(
-        'http://192.168.0.252:3000/prediction/',
+        'http://localhost:3000/prediction/',
         postData,
       );
       setRes(response.data);
-      // navigation.navigate('DetectionResultScreen', {
-      //   res,
-      //   imagePath,
-      // });
       console.log('Server Response: ', res);
     } catch (error) {
       console.log(error.response.data.error);
