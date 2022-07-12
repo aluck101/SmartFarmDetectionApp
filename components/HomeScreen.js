@@ -1,17 +1,15 @@
 import React from 'react';
 import {SafeAreaView, Image, StyleSheet, TouchableOpacity} from 'react-native';
-import {Button, Appbar, Card, Title, Paragraph} from 'react-native-paper';
+import {Button, Title, Paragraph} from 'react-native-paper';
 
 function HomeScreen({navigation}) {
   return (
     <SafeAreaView style={styles.container}>
       <Title style={styles.header}>Camera Based Detection</Title>
-
       <Image
         source={require('../assets/img/pl.jpg')}
         style={{width: 400, height: 400}}
       />
-
       <Paragraph>Test Environment for Camera Based Object Detection</Paragraph>
       <TouchableOpacity>
         <Button
@@ -24,7 +22,6 @@ function HomeScreen({navigation}) {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -33,5 +30,4 @@ const styles = StyleSheet.create({
     backgroundColor: 'mintcream',
   },
 });
-
 export default HomeScreen;

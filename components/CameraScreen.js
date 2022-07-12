@@ -1,18 +1,18 @@
 import React, {useRef, useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native';
 import axios from 'react-native-axios';
 import {RNCamera} from 'react-native-camera';
 import {IconButton} from 'react-native-paper';
 import {useEffect} from 'react/cjs/react.development';
 
 const CameraScreen = ({navigation}) => {
-  const camera = useRef(null);
+  const camera = useRef({});
   const [imagePath, setImagePath] = useState(null);
-  const [base64img, setBase64img] = useState(null);
-  const [res, setRes] = useState(null);
+  const [base64img, setBase64img] = useState('');
+  const [res, setRes] = useState({});
 
   const CameraLoadingView = () => (
-    <View style={styles}>
+    <View style={styles.container}>
       <Text>Loading</Text>
     </View>
   );
@@ -20,7 +20,7 @@ const CameraScreen = ({navigation}) => {
   const takePicture = async () => {
     try {
       const options = {
-        quality: 0.5,
+        quality: 0.3,
         base64: true,
         exif: true,
         captureAudio: false,
@@ -37,10 +37,14 @@ const CameraScreen = ({navigation}) => {
     try {
       const postData = {img: base64img};
       const response = await axios.post(
-        'http://127.0.0.1:3000/test/',
+        'http://192.168.0.252:3000/prediction/',
         postData,
       );
       setRes(response.data);
+      // navigation.navigate('DetectionResultScreen', {
+      //   res,
+      //   imagePath,
+      // });
       console.log('Server Response: ', res);
     } catch (error) {
       console.log(error.response.data.error);
@@ -49,6 +53,9 @@ const CameraScreen = ({navigation}) => {
 
   useEffect(() => {
     postImg();
+  }, []);
+
+  useEffect(() => {
     takePicture();
   }, []);
 
@@ -58,61 +65,72 @@ const CameraScreen = ({navigation}) => {
         ref={camera}
         style={styles.preview}
         type={RNCamera.Constants.Type.back}
-        flashMode={RNCamera.Constants.FlashMode.on}
+        flashMode={RNCamera.Constants.FlashMode.off}
         androidCameraPermissionOptions={{
           title: 'Permission to use camera',
           message: 'We need your permission to use your camera',
           buttonPositive: 'Ok',
           buttonNegative: 'Cancel',
         }}>
-        {({camera, status}) => {
-          if (status !== 'READY' || camera == null)
+        {({status}) => {
+          if (status !== 'READY' || camera === null) {
             return <CameraLoadingView />;
+          }
           return (
             <View style={styles.cameraview}>
               <TouchableOpacity
                 onPress={() => {
                   takePicture();
                   postImg();
-                  navigation.navigate('DetectionResultScreen', {
-                    res,
-                    imagePath,
-                  });
                 }}
                 style={styles.capture}>
-                <IconButton icon="camera" size={25} />
+                <IconButton icon="camera" size={50} />
               </TouchableOpacity>
             </View>
           );
         }}
       </RNCamera>
+      <Image source={{uri: imagePath}} style={styles.image_style} />
+      <Text style={styles.textBody}> Result: {res.category} </Text>
+      <Text style={styles.textBody}> Confidence: {res.probs} </Text>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: 'black',
+    backgroundColor: 'mint',
   },
   preview: {
-    flex: 1,
+    flex: 3,
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
   cameraview: {
-    flex: 0,
+    flex: 3,
     flexDirection: 'row',
     justifyContent: 'center',
   },
+  image_style: {
+    flex: 3,
+    width: 400,
+    height: 200,
+  },
   capture: {
     flex: 0,
-    backgroundColor: '#fff',
     borderRadius: 5,
     padding: 15,
     paddingHorizontal: 20,
-    alignSelf: 'center',
+    alignSelf: 'flex-end',
     margin: 20,
+  },
+  textBody: {
+    flex: 1,
+    fontWeight: 'bold',
+    color: 'green',
+    fontSize: 15,
   },
   loading: {
     flex: 1,
