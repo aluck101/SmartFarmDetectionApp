@@ -5,7 +5,6 @@ import {Provider as PaperProvider} from 'react-native-paper';
 
 import HomeScreen from './components/HomeScreen';
 import CameraScreen from './components/CameraScreen';
-import DetectionResultScreen from './components/DetectionResultScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,11 +19,6 @@ const App = () => {
             options={{headerShown: true}}
           />
           <Stack.Screen name="CameraScreen" component={CameraScreen} />
-          <Stack.Screen
-            name="DetectionResultScreen"
-            component={DetectionResultScreen}
-            options={{headerShown: true}}
-          />
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>

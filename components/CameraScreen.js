@@ -1,9 +1,8 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native';
 import axios from 'react-native-axios';
 import {RNCamera} from 'react-native-camera';
 import {IconButton} from 'react-native-paper';
-import {useEffect} from 'react/cjs/react.development';
 
 const CameraScreen = ({navigation}) => {
   const camera = useRef({});
@@ -37,7 +36,7 @@ const CameraScreen = ({navigation}) => {
     try {
       const postData = {img: base64img};
       const response = await axios.post(
-        'http://localhost:3000/prediction/',
+        'http://192.168.0.252:3000/prediction/',
         postData,
       );
       setRes(response.data);
@@ -49,7 +48,7 @@ const CameraScreen = ({navigation}) => {
 
   useEffect(() => {
     postImg();
-  }, []);
+  }, [res]);
 
   useEffect(() => {
     takePicture();
@@ -63,9 +62,9 @@ const CameraScreen = ({navigation}) => {
         type={RNCamera.Constants.Type.back}
         flashMode={RNCamera.Constants.FlashMode.off}
         androidCameraPermissionOptions={{
-          title: 'Permission to use camera',
-          message: 'We need your permission to use your camera',
-          buttonPositive: 'Ok',
+          title: 'Camera Permission',
+          message: 'Needs Camera Permission',
+          buttonPositive: 'Allow',
           buttonNegative: 'Cancel',
         }}>
         {({status}) => {
